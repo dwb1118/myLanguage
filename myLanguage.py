@@ -2,6 +2,7 @@
 # Daniel Bell & Taylor Kiker
 
 from sly import Lexer
+from sly import Parser
 
 class BasicLexer(Lexer):
     tokens = { NAME, NUMBER, STRING }
@@ -143,13 +144,13 @@ class BasicExecute:
 if __name__ == '__main__': 
 	lexer = BasicLexer() 
 	parser = BasicParser() 
-	print('GFG Language') 
+	print(' Language') 
 	env = {} 
 	
 	while True: 
 		
 		try: 
-			text = input('GFG Language > ') 
+			text = input(' Language > ') 
 		
 		except EOFError: 
 			break
@@ -157,5 +158,3 @@ if __name__ == '__main__':
 		if text: 
 			tree = parser.parse(lexer.tokenize(text)) 
 			BasicExecute(tree, env)
-
-
