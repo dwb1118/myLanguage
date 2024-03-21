@@ -59,7 +59,7 @@ class BasicParser(Parser):
     def statement(self, p): 
         return (p.expr) 
   
-    @_('expr "+" expr') 
+    @_('expr "addition" expr') 
     def expr(self, p): 
         return ('add', p.expr0, p.expr1) 
   
