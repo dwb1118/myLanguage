@@ -158,5 +158,3 @@ if __name__ == '__main__':
 		if text: 
 			tree = parser.parse(lexer.tokenize(text)) 
 			BasicExecute(tree, env)
-
-
