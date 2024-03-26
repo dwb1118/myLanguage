@@ -9,6 +9,7 @@ class BasicLexer(Lexer):
     ignore = '\t '
     literals = {'=', '+', '-', '/', '*', '(', ')', ',', ';'}
 
+    # Token definitions
     NAME = r'[a-zA-Z_][a-zA-Z0-9_]*'
     STRING = r'\".*?\"'
 
@@ -27,15 +28,17 @@ class BasicLexer(Lexer):
         self.lineno = t.value.count('\n')
 
 class BasicParser(Parser): 
-    #tokens are passed from lexer to parser 
+	
+    # Copy tokens from lexer
     tokens = BasicLexer.tokens 
   
     precedence = ( 
         ('left', '+', '-'), 
         ('left', '*', '/'), 
         ('right', 'UMINUS'), 
-    ) 
+    )
   
+    # Constructor
     def __init__(self): 
         self.env = { } 
   
@@ -141,15 +144,15 @@ class BasicExecute:
 				return 0
 
 
-if __name__ == '__main__': 
-	lexer = BasicLexer() 
-	parser = BasicParser() 
+if __name__ == '__main__':
+	lexer = BasicLexer()
+	parser = BasicParser()
 	print(' Language') 
 	env = {} 
 	
 	while True: 
 		
-		try: 
+		try:
 			text = input(' Language > ') 
 		
 		except EOFError: 
