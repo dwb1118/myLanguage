@@ -7,7 +7,7 @@ from sly import Parser
 class BasicLexer(Lexer):
     tokens = { NAME, NUMBER, STRING }
     ignore = '\t '
-    literals = {'=', '+', '-', '/', '*', '(', ')', ',', ';'}
+    literals = {'=', "+", '-', '/', '*', '(', ')', ',', ';'}
 
     # Token definitions
     NAME = r'[a-zA-Z_][a-zA-Z0-9_]*'
@@ -19,9 +19,6 @@ class BasicLexer(Lexer):
         t.value = int(t.value)
         return t
     
-    @_(r'//.*')
-    def COMMENT(self, t):
-        pass
 
     @_(r'\n+')
     def newline(self, t):
