@@ -4,6 +4,7 @@
 from sly import Lexer
 from sly import Parser
 
+# Begin Lexer ----------------------------------------------------------------------------------
 class BasicLexer(Lexer):
     tokens = { NAME, NUMBER, STRING }
     ignore = '\t '
@@ -24,6 +25,7 @@ class BasicLexer(Lexer):
     def newline(self, t):
         self.lineno = t.value.count('\n')
 
+    # Begin Parser ----------------------------------------------------------------------------
 class BasicParser(Parser): 
 	
     # Copy tokens from lexer
@@ -39,6 +41,10 @@ class BasicParser(Parser):
     def __init__(self): 
         self.env = { } 
   
+    # Matching input to functions -------------------------------------------------------------
+    # p = token
+    # self = parser instance
+		
     @_('') 
     def statement(self, p): 
         pass
