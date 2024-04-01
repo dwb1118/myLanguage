@@ -1,25 +1,25 @@
 # myLanguage.py
 # Daniel Bell & Taylor Kiker
 
-from sly import Lexer
-from sly import Parser
+from sly import Lexer # tokenizes input text
+from sly import Parser # generates a tree from tokenized input
 
 # Begin Lexer ----------------------------------------------------------------------------------
 class BasicLexer(Lexer):
-    tokens = { NAME, NUMBER, STRING }
+    tokens = { NAME, NUMBER, STRING, DOUBLE_SLASH }
     ignore = '\t '
-    literals = {'=', "+", '-', '/', '*', '(', ')', ',', ';'}
+    literals = {'=', "+", '-', '/', '*', '(', ')', ',', ';', '//'}
 
     # Token definitions
     NAME = r'[a-zA-Z_][a-zA-Z0-9_]*'
     STRING = r'\".*?\"'
+    DOUBLE_SLASH = r'//'
 
     @_(r'\d+')
     def NUMBER(self, t):
 
         t.value = int(t.value)
         return t
-    
 
     @_(r'\n+')
     def newline(self, t):
@@ -33,7 +33,7 @@ class BasicParser(Parser):
   
     precedence = ( 
         ('left', '+', '-'), 
-        ('left', '*', '/'), 
+        ('left', '*', '/',), 
         ('right', 'UMINUS'), 
     )
   
@@ -92,15 +92,30 @@ class BasicParser(Parser):
     @_('NUMBER') 
     def expr(self, p): 
         return ('num', p.NUMBER)
+	
+    @_('expr DOUBLE_SLASH expr')
+    def expr(self, p):
+	    return ('div_int', p.expr0, p.expr1)
+	
+
     
 class BasicExecute: 
 	
 	def __init__(self, tree, env): 
-		self.env = env 
-		result = self.walkTree(tree) 
-		if result is not None and isinstance(result, int): 
-			print(result) 
-		if isinstance(result, str) and result[0] == '"': 
+		
+	    self.env = env
+		
+        result = self.walkTree(tree)
+		
+		print(result) 
+		
+        if result is not None and isinstance(result, int): # print integers
+			print(result)
+			
+        if result is not None and isinstance(result, float): # print doubles
+            print(result)
+			
+        if isinstance(result, str) and result[0] == '"': # print strings
 			print(result) 
 
 	def walkTree(self, node): 
@@ -133,7 +148,9 @@ class BasicExecute:
 		elif node[0] == 'mul': 
 			return self.walkTree(node[1]) * self.walkTree(node[2]) 
 		elif node[0] == 'div': 
-			return self.walkTree(node[1]) / self.walkTree(node[2]) 
+			return self.walkTree(node[1]) / self.walkTree(node[2])
+		elif node[0] == 'div_int':
+			return self.walkTree(node[1]) // self.walkTree(node[2])
 
 		if node[0] == 'var_assign': 
 			self.env[node[1]] = self.walkTree(node[2]) 
@@ -150,13 +167,13 @@ class BasicExecute:
 if __name__ == '__main__':
 	lexer = BasicLexer()
 	parser = BasicParser()
-	print(' Language') 
+	print('myLanguage') 
 	env = {} 
 	
 	while True: 
 		
 		try:
-			text = input(' Language > ') 
+			text = input('myLanguage > ') 
 		
 		except EOFError: 
 			break
