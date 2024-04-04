@@ -6,7 +6,7 @@ from sly import Parser # generates a tree from tokenized input
 
 # Begin Lexer ----------------------------------------------------------------------------------
 class BasicLexer(Lexer):
-    tokens = { NAME, NUMBER, STRING, DOUBLE_SLASH }
+    tokens = { NAME, NUMBER, STRING, DOUBLE_SLASH, DELETE }
     ignore = '\t '
     literals = {'=', "+", '-', '/', '*', '(', ')', ',', ';', '//'}
 
@@ -14,6 +14,7 @@ class BasicLexer(Lexer):
     NAME = r'[a-zA-Z_][a-zA-Z0-9_]*'
     STRING = r'\".*?\"'
     DOUBLE_SLASH = r'//'
+    DELETE = r'Delete(NAME)'
 
     @_(r'\d+')
     def NUMBER(self, t):
@@ -96,8 +97,17 @@ class BasicParser(Parser):
     @_('expr DOUBLE_SLASH expr')
     def expr(self, p):
 	    return ('div_int', p.expr0, p.expr1)
+    
+    @_('STRING "+" STRING')
+    def expr(self, p):
+	    return ('Concat', p.STRING0, p.STRING1)
+    
+    @_('DELETE')
+    def expr(self,p):
+         return ('Delete', p.STRING0)
 	
-
+    
+        
     
 class BasicExecute: 
 	
@@ -106,7 +116,7 @@ class BasicExecute:
 
         result = self.walkTree(tree)
 
-        print(result) 
+        #print(result) 
 
         if result is not None and isinstance(result, int): # print integers
             print(result)
@@ -150,6 +160,16 @@ class BasicExecute:
             return self.walkTree(node[1]) / self.walkTree(node[2])
         elif node[0] == 'div_int':
             return self.walkTree(node[1]) // self.walkTree(node[2])
+        elif node[0] == 'Concat':
+             a = self.walkTree(node[1])
+             b = self.walkTree(node[2])
+             '''
+             a[a.size]
+             '''
+             return a + b
+        elif node[0] == 'Delete':
+            return "Deleted"
+              
 
         if node[0] == 'var_assign': 
             self.env[node[1]] = self.walkTree(node[2]) 
