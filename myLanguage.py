@@ -1,41 +1,50 @@
 # myLanguage.py
 # Daniel Bell & Taylor Kiker
 
-from sly import Lexer
-from sly import Parser
+from sly import Lexer # tokenizes input text
+from sly import Parser # generates a tree from tokenized input
 
+# Begin Lexer ----------------------------------------------------------------------------------
 class BasicLexer(Lexer):
-    tokens = { NAME, NUMBER, STRING }
+    tokens = { NAME, NUMBER, STRING, DOUBLE_SLASH }
     ignore = '\t '
-    literals = {'=', "+", '-', '/', '*', '(', ')', ',', ';'}
+    literals = {'=', "+", '-', '/', '*', '(', ')', ',', ';', '//'}
 
+    # Token definitions
     NAME = r'[a-zA-Z_][a-zA-Z0-9_]*'
     STRING = r'\".*?\"'
+    DOUBLE_SLASH = r'//'
 
     @_(r'\d+')
     def NUMBER(self, t):
 
         t.value = int(t.value)
         return t
-    
 
     @_(r'\n+')
     def newline(self, t):
         self.lineno = t.value.count('\n')
 
+    # Begin Parser ----------------------------------------------------------------------------
 class BasicParser(Parser): 
-    #tokens are passed from lexer to parser 
+	
+    # Copy tokens from lexer
     tokens = BasicLexer.tokens 
   
     precedence = ( 
         ('left', '+', '-'), 
-        ('left', '*', '/'), 
+        ('left', '*', '/',), 
         ('right', 'UMINUS'), 
-    ) 
+    )
   
+    # Constructor
     def __init__(self): 
         self.env = { } 
   
+    # Matching input to functions -------------------------------------------------------------
+    # p = token
+    # self = parser instance
+		
     @_('') 
     def statement(self, p): 
         pass
@@ -84,76 +93,88 @@ class BasicParser(Parser):
     def expr(self, p): 
         return ('num', p.NUMBER)
 	
-    @_('STRING "+" STRING')
-	def expr(self,p)
-    
+    @_('expr DOUBLE_SLASH expr')
+    def expr(self, p):
+	    return ('div_int', p.expr0, p.expr1)
+	
+
     
 class BasicExecute: 
 	
-	def __init__(self, tree, env): 
-		self.env = env 
-		result = self.walkTree(tree) 
-		if result is not None and isinstance(result, int): 
-			print(result) 
-		if isinstance(result, str) and result[0] == '"': 
-			print(result) 
+    def __init__(self, tree, env):
+        self.env = env
 
-	def walkTree(self, node): 
+        result = self.walkTree(tree)
 
-		if isinstance(node, int): 
-			return node 
-		if isinstance(node, str): 
-			return node 
+        print(result) 
 
-		if node is None: 
-			return None
+        if result is not None and isinstance(result, int): # print integers
+            print(result)
 
-		if node[0] == 'program': 
-			if node[1] == None: 
-				self.walkTree(node[2]) 
-			else: 
-				self.walkTree(node[1]) 
-				self.walkTree(node[2]) 
+        if result is not None and isinstance(result, float): # print doubles
+            print(result)
 
-		if node[0] == 'num': 
-			return node[1] 
+        if isinstance(result, str) and result[0] == '"': # print strings
+            print(result)
 
-		if node[0] == 'str': 
-			return node[1] 
+    def walkTree(self, node): 
 
-		if node[0] == 'add': 
-			return self.walkTree(node[1]) + self.walkTree(node[2]) 
-		elif node[0] == 'sub': 
-			return self.walkTree(node[1]) - self.walkTree(node[2]) 
-		elif node[0] == 'mul': 
-			return self.walkTree(node[1]) * self.walkTree(node[2]) 
-		elif node[0] == 'div': 
-			return self.walkTree(node[1]) / self.walkTree(node[2]) 
+        if isinstance(node, int): 
+            return node 
+        if isinstance(node, str): 
+            return node 
 
-		if node[0] == 'var_assign': 
-			self.env[node[1]] = self.walkTree(node[2]) 
-			return node[1] 
+        if node is None: 
+            return None
 
-		if node[0] == 'var': 
-			try: 
-				return self.env[node[1]] 
-			except LookupError: 
-				print("Undefined variable '"+node[1]+"' found!") 
-				return 0
+        if node[0] == 'program': 
+            if node[1] == None: 
+                self.walkTree(node[2]) 
+            else: 
+                self.walkTree(node[1]) 
+                self.walkTree(node[2]) 
+
+        if node[0] == 'num': 
+            return node[1] 
+
+        if node[0] == 'str': 
+            return node[1] 
+
+        if node[0] == 'add': 
+            return self.walkTree(node[1]) + self.walkTree(node[2]) 
+        elif node[0] == 'sub': 
+            return self.walkTree(node[1]) - self.walkTree(node[2]) 
+        elif node[0] == 'mul': 
+            return self.walkTree(node[1]) * self.walkTree(node[2]) 
+        elif node[0] == 'div': 
+            return self.walkTree(node[1]) / self.walkTree(node[2])
+        elif node[0] == 'div_int':
+            return self.walkTree(node[1]) // self.walkTree(node[2])
+
+        if node[0] == 'var_assign': 
+            self.env[node[1]] = self.walkTree(node[2]) 
+            return node[1] 
+
+        if node[0] == 'var': 
+            try: 
+                return self.env[node[1]] 
+            except LookupError: 
+                print("Undefined variable '"+node[1]+"' found!") 
+                return 0
 
     
 
 
-if __name__ == '__main__': 
-	lexer = BasicLexer() 
-	parser = BasicParser() 
-	print(' Language') 
+if __name__ == '__main__':
+	lexer = BasicLexer()
+	parser = BasicParser()
+	print('myLanguage') 
 	env = {} 
 	
 	while True: 
 		
-		try: 
-			text = input(' Language > ') 
+		try:
+			text = input('myLanguage > ') 
 		
 		except EOFError: 
 			break
