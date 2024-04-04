@@ -83,6 +83,10 @@ class BasicParser(Parser):
     @_('NUMBER') 
     def expr(self, p): 
         return ('num', p.NUMBER)
+	
+    @_('STRING "+" STRING')
+	def expr(self,p)
+    
     
 class BasicExecute: 
 	
@@ -136,6 +140,8 @@ class BasicExecute:
 			except LookupError: 
 				print("Undefined variable '"+node[1]+"' found!") 
 				return 0
+
+    
 
 
 if __name__ == '__main__': 
