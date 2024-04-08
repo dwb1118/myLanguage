@@ -96,15 +96,15 @@ class BasicParser(Parser):
 	
     @_('expr DOUBLE_SLASH expr')
     def expr(self, p):
-	    return ('div_int', p.expr0, p.expr1)
+        return ('div_int', p.expr0, p.expr1)
     
     @_('STRING "+" STRING')
     def expr(self, p):
-	    return ('Concat', p.STRING0, p.STRING1)
-    
+        return ('Concat', p.STRING0, p.STRING1)
+
     @_('DELETE')
     def expr(self,p):
-         return ('Delete', p.STRING0)
+        return ('Delete', p.STRING0)
 	
     
         
@@ -168,6 +168,7 @@ class BasicExecute:
              '''
              return a + b
         elif node[0] == 'Delete':
+            # Do something
             return "Deleted"
               
 
