@@ -14,7 +14,13 @@ class BasicLexer(Lexer):
     NAME = r'[a-zA-Z_][a-zA-Z0-9_]*'
     STRING = r'\".*?\"'
     DOUBLE_SLASH = r'//'
-    DELETE = r'Delete(NAME)'
+    
+    # Define DELETE token to match delete() syntax and capture string name
+    @_(r'delete\(\s*({NAME})\s*\)')
+    def DELETE(self, t):
+        # Extract string name from the DELETE token
+        t.value = t.value.strip('delete(').strip(')')
+        return t
 
     @_(r'\d+')
     def NUMBER(self, t):
@@ -68,7 +74,7 @@ class BasicParser(Parser):
   
     @_('expr "+" expr') 
     def expr(self, p): 
-        return ('add', p.expr0, p.expr1) 
+            return ('add', p.expr0, p.expr1) 
   
     @_('expr "-" expr') 
     def expr(self, p): 
@@ -97,14 +103,17 @@ class BasicParser(Parser):
     @_('expr DOUBLE_SLASH expr')
     def expr(self, p):
         return ('div_int', p.expr0, p.expr1)
-    
+    '''
     @_('STRING "+" STRING')
     def expr(self, p):
-        return ('Concat', p.STRING0, p.STRING1)
+        print("2\n")
+        return ('Concat', p.STRING0, p.STRING1)'''
 
+    # Define production rule for DELETE token
     @_('DELETE')
-    def expr(self,p):
-        return ('Delete', p.STRING0)
+    def expr(self, p):
+        # Extract string name from DELETE token
+        return ('Delete', p.DELETE)
 	
     
         
@@ -151,25 +160,47 @@ class BasicExecute:
             return node[1] 
 
         if node[0] == 'add': 
-            return self.walkTree(node[1]) + self.walkTree(node[2]) 
+
+            if(isinstance(self.walkTree(node[1]), str) and isinstance(self.walkTree(node[2]), str)):
+                 # Reassign strings
+                a = self.walkTree(node[1])
+                b = self.walkTree(node[2])
+
+                # Remove inner quotes
+                a = a[:-1]
+                b = b[1:]
+
+                '''
+                print(a)
+                print("\n")
+                print(b)
+                print("\n")
+                '''
+
+                return a + b
+            else:
+                return self.walkTree(node[1]) + self.walkTree(node[2]) 
+
         elif node[0] == 'sub': 
             return self.walkTree(node[1]) - self.walkTree(node[2]) 
+        
         elif node[0] == 'mul': 
             return self.walkTree(node[1]) * self.walkTree(node[2]) 
+
         elif node[0] == 'div': 
             return self.walkTree(node[1]) / self.walkTree(node[2])
+        
         elif node[0] == 'div_int':
             return self.walkTree(node[1]) // self.walkTree(node[2])
-        elif node[0] == 'Concat':
-             a = self.walkTree(node[1])
-             b = self.walkTree(node[2])
-             '''
-             a[a.size]
-             '''
-             return a + b
+        
         elif node[0] == 'Delete':
-            # Do something
-            return "Deleted"
+            string_name = node[1]
+            # Remove the string from the environment
+            if string_name in self.env:
+                del self.env[string_name]
+                return f"String '{string_name}' deleted successfully."
+            else:
+                return f"String '{string_name}' not found."
               
 
         if node[0] == 'var_assign': 
