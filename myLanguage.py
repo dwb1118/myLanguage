@@ -103,11 +103,6 @@ class BasicParser(Parser):
     @_('expr DOUBLE_SLASH expr')
     def expr(self, p):
         return ('div_int', p.expr0, p.expr1)
-    '''
-    @_('STRING "+" STRING')
-    def expr(self, p):
-        print("2\n")
-        return ('Concat', p.STRING0, p.STRING1)'''
 
     # Define production rule for DELETE token
     @_('DELETE')
@@ -169,13 +164,6 @@ class BasicExecute:
                 # Remove inner quotes
                 a = a[:-1]
                 b = b[1:]
-
-                '''
-                print(a)
-                print("\n")
-                print(b)
-                print("\n")
-                '''
 
                 return a + b
             else:
