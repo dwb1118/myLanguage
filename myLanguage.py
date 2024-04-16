@@ -160,7 +160,6 @@ class BasicExecute:
                  # Reassign strings
                 a = self.walkTree(node[1])
                 b = self.walkTree(node[2])
-
                 # Remove inner quotes
                 a = a[:-1]
                 b = b[1:]
@@ -174,12 +173,16 @@ class BasicExecute:
                  # Reassign strings
                 a = self.walkTree(node[1])
                 b = self.walkTree(node[2])
-
                 # Remove inner quotes
-                a = a[:-1]
+                a = a[:-1] 
+                b = b[:-1]
                 b = b[1:]
-
-                return a - b
+                a = a[1:]
+                a = a.replace(b, ' ')
+                #a[:0] = [" \" "]
+                #a[len(a)+1:] = [" \" "]
+                a = '"' + a + '"'
+                return a
             else:
                 return self.walkTree(node[1]) - self.walkTree(node[2]) 
         
