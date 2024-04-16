@@ -15,12 +15,14 @@ class BasicLexer(Lexer):
     STRING = r'\".*?\"'
     DOUBLE_SLASH = r'//'
     
+    '''
     # Define DELETE token to match delete() syntax and capture string name
     @_(r'delete\(\s*({NAME})\s*\)')
     def DELETE(self, t):
         # Extract string name from the DELETE token
         t.value = t.value.strip('delete(').strip(')')
         return t
+    '''
 
     @_(r'\d+')
     def NUMBER(self, t):
@@ -111,8 +113,6 @@ class BasicParser(Parser):
         return ('Delete', p.DELETE)
 	
     
-        
-    
 class BasicExecute: 
 	
     def __init__(self, tree, env):
@@ -178,7 +178,7 @@ class BasicExecute:
                 b = b[:-1]
                 b = b[1:]
                 a = a[1:]
-                a = a.replace(b, ' ')
+                a = a.replace(b, '')
                 #a[:0] = [" \" "]
                 #a[len(a)+1:] = [" \" "]
                 a = '"' + a + '"'
