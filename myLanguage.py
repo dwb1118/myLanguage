@@ -170,7 +170,18 @@ class BasicExecute:
                 return self.walkTree(node[1]) + self.walkTree(node[2]) 
 
         elif node[0] == 'sub': 
-            return self.walkTree(node[1]) - self.walkTree(node[2]) 
+            if(isinstance(self.walkTree(node[1]), str) and isinstance(self.walkTree(node[2]), str)):
+                 # Reassign strings
+                a = self.walkTree(node[1])
+                b = self.walkTree(node[2])
+
+                # Remove inner quotes
+                a = a[:-1]
+                b = b[1:]
+
+                return a - b
+            else:
+                return self.walkTree(node[1]) - self.walkTree(node[2]) 
         
         elif node[0] == 'mul': 
             return self.walkTree(node[1]) * self.walkTree(node[2]) 
