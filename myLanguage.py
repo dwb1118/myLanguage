@@ -8,7 +8,7 @@ from sly import Parser # generates a tree from tokenized input
 class BasicLexer(Lexer):
     tokens = { NAME, NUMBER, STRING, DOUBLE_SLASH, DELETE }
     ignore = '\t '
-    literals = {'=', "+", '-', '/', '*', ',', ';', '//', '(', ')'}
+    literals = {'=', "+", '-', '/', '*', ',', ';', '//', '(', ')', '%'}
 
     # Token definitions
     NAME = r'[a-zA-Z_][a-zA-Z0-9_]*'
@@ -88,6 +88,10 @@ class BasicParser(Parser):
     @_('expr "/" expr') 
     def expr(self, p): 
         return ('div', p.expr0, p.expr1) 
+    
+    @_('expr "%" expr') 
+    def expr(self, p): 
+        return ('modulo', p.expr0, p.expr1) 
   
     @_('"-" expr %prec UMINUS') 
     def expr(self, p): 
@@ -190,6 +194,9 @@ class BasicExecute:
 
         elif node[0] == 'div': 
             return self.walkTree(node[1]) / self.walkTree(node[2])
+        
+        elif node[0] == 'modulo':
+            return self.walkTree(node[1]) % self.walkTree(node[2])
         
         elif node[0] == 'div_int':
             return self.walkTree(node[1]) // self.walkTree(node[2])
