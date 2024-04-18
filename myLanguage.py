@@ -3,26 +3,26 @@
 
 from sly import Lexer # tokenizes input text
 from sly import Parser # generates a tree from tokenized input
+import re
 
 # Begin Lexer ----------------------------------------------------------------------------------
 class BasicLexer(Lexer):
     tokens = { NAME, NUMBER, STRING, DOUBLE_SLASH, DELETE }
     ignore = '\t '
-    literals = {'=', "+", '-', '/', '*', '(', ')', ',', ';', '//'}
+    literals = {'=', "+", '-', '/', '*', ',', ';', '//', '(', ')'}
 
     # Token definitions
     NAME = r'[a-zA-Z_][a-zA-Z0-9_]*'
     STRING = r'\".*?\"'
     DOUBLE_SLASH = r'//'
     
-    '''
-    # Define DELETE token to match delete() syntax and capture string name
-    @_(r'delete\(\s*({NAME})\s*\)')
+    
+    @_(rf'delete\s*\(\s*({NAME})\s*\)')
     def DELETE(self, t):
-        # Extract string name from the DELETE token
+    # Extract string name from the DELETE token
         t.value = t.value.strip('delete(').strip(')')
         return t
-    '''
+
 
     @_(r'\d+')
     def NUMBER(self, t):
