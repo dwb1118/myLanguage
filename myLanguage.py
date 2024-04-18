@@ -3,7 +3,6 @@
 
 from sly import Lexer # tokenizes input text
 from sly import Parser # generates a tree from tokenized input
-import re
 
 # Begin Lexer ----------------------------------------------------------------------------------
 class BasicLexer(Lexer):
