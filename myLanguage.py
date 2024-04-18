@@ -8,7 +8,7 @@ from sly import Parser # generates a tree from tokenized input
 class BasicLexer(Lexer):
     tokens = { NAME, NUMBER, STRING, DOUBLE_SLASH, DELETE }
     ignore = '\t '
-    literals = {'=', "+", '-', '/', '*', ',', ';', '//', '(', ')', '%'}
+    literals = {'=', '+', '-', '/', '*', ',', ';', '//', '(', ')', '%'}
 
     # Token definitions
     NAME = r'[a-zA-Z_][a-zA-Z0-9_]*'
