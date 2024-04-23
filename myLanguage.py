@@ -1,12 +1,14 @@
-# myLanguage.py
+# mylanguage.py
 # Daniel Bell & Taylor Kiker
+
+# This is Daniel Bell and Taylor Kiker. Our programming language we created is named Biker, a combination of both our last names. 
 
 from sly import Lexer # tokenizes input text
 from sly import Parser # generates a tree from tokenized input
 
 # Begin Lexer ----------------------------------------------------------------------------------
 class BasicLexer(Lexer):
-    tokens = { NAME, NUMBER, STRING, DOUBLE_SLASH, DELETE }
+    tokens = { NAME, NUMBER, STRING, DOUBLE_SLASH }
     ignore = '\t '
     literals = {'=', '+', '-', '/', '*', ',', ';', '//', '(', ')', '%'}
 
@@ -14,13 +16,6 @@ class BasicLexer(Lexer):
     NAME = r'[a-zA-Z_][a-zA-Z0-9_]*'
     STRING = r'\".*?\"'
     DOUBLE_SLASH = r'//'
-    
-    
-    @_(rf'delete\s*\(\s*({NAME})\s*\)')
-    def DELETE(self, t):
-    # Extract string name from the DELETE token
-        t.value = t.value.strip('delete(').strip(')')
-        return t
 
 
     @_(r'\d+')
@@ -109,11 +104,6 @@ class BasicParser(Parser):
     def expr(self, p):
         return ('div_int', p.expr0, p.expr1)
 
-    # Define production rule for DELETE token
-    @_('DELETE')
-    def expr(self, p):
-        # Extract string name from DELETE token
-        return ('Delete', p.DELETE)
 	
     
 class BasicExecute: 
@@ -122,8 +112,6 @@ class BasicExecute:
         self.env = env
 
         result = self.walkTree(tree)
-
-        #print(result) 
 
         if result is not None and isinstance(result, int): # print integers
             print(result)
@@ -182,8 +170,6 @@ class BasicExecute:
                 b = b[1:]
                 a = a[1:]
                 a = a.replace(b, '')
-                #a[:0] = [" \" "]
-                #a[len(a)+1:] = [" \" "]
                 a = '"' + a + '"'
                 return a
             else:
@@ -200,15 +186,6 @@ class BasicExecute:
         
         elif node[0] == 'div_int':
             return self.walkTree(node[1]) // self.walkTree(node[2])
-        
-        elif node[0] == 'Delete':
-            string_name = node[1]
-            # Remove the string from the environment
-            if string_name in self.env:
-                del self.env[string_name]
-                return f"String '{string_name}' deleted successfully."
-            else:
-                return f"String '{string_name}' not found."
               
 
         if node[0] == 'var_assign': 
@@ -226,13 +203,13 @@ class BasicExecute:
 if __name__ == '__main__':
 	lexer = BasicLexer()
 	parser = BasicParser()
-	print('myLanguage') 
+	print('Biker') 
 	env = {} 
 	
 	while True: 
 		
 		try:
-			text = input('myLanguage > ') 
+			text = input('Biker > ') 
 		
 		except EOFError: 
 			break
