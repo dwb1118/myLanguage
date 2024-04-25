@@ -1,8 +1,6 @@
 # mylanguage.py
 # Daniel Bell & Taylor Kiker
 
-# This is Daniel Bell and Taylor Kiker. Our programming language we created is named Biker, a combination of both our last names. 
-
 from sly import Lexer # tokenizes input text
 from sly import Parser # generates a tree from tokenized input
 
@@ -16,7 +14,6 @@ class BasicLexer(Lexer):
     NAME = r'[a-zA-Z_][a-zA-Z0-9_]*'
     STRING = r'\".*?\"'
     DOUBLE_SLASH = r'//'
-
 
     @_(r'\d+')
     def NUMBER(self, t):
@@ -104,7 +101,6 @@ class BasicParser(Parser):
     def expr(self, p):
         return ('div_int', p.expr0, p.expr1)
 
-	
     
 class BasicExecute: 
 	
